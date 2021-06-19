@@ -12,4 +12,9 @@ Classification of the system:
 
 Dynamic Programming approach:
 
+<p align="left">
+  <img src="images/DynProg.svg" width="500" title="hover text">
+</p>
 
+- state x: Battery charge
+- contol u: Energy used to power the motors

@@ -16,5 +16,8 @@ Dynamic Programming approach:
   <img src="images/DynProg.svg" width="500" title="hover text">
 </p>
 
-- state x: Battery charge
-- contol u: Energy used to power the motors
+Model:
+
+<p align="left">
+  <img src="images/PlannedModel.svg" width="500" title="hover text">
+</p>

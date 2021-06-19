@@ -2,7 +2,7 @@
 
 Modeling the energy budget of a solar-powered boat and planning the motor actuation to maximize the distance traveled.
 
-Classification of the system:
+## Classification of the system:
 
 - Discrete time system
 - Discretized (finite) state space
@@ -10,13 +10,13 @@ Classification of the system:
 - time variant
 - non-linear
 
-Dynamic Programming approach:
+## Dynamic Programming approach:
 
 <p align="left">
   <img src="images/DynProg.svg" width="500" title="hover text">
 </p>
 
-Model:
+## Model:
 
 <p align="left">
   <img src="images/PlannedModel.svg" width="500" title="hover text">

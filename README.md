@@ -4,9 +4,9 @@ Modeling the energy budget of a solar-powered boat and planning the motor actuat
 
 ## Classification of the system:
 
-- Discrete time system
-- Discretized (finite) state space
-- Discretized control set
+- discrete time system
+- discretized (finite) state space
+- discretized control set
 - time variant
 - non-linear
 

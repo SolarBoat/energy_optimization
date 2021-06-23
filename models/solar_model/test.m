@@ -1,10 +1,3 @@
-clear variables
-close all
-clc
-
-addpath('C:\Users\lukas\Documents\CasADi')
-import casadi.*
-
 dt = datetime('now');
 
 ct = dt.Hour + dt.Minute/60;

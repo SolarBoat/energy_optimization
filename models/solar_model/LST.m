@@ -6,7 +6,6 @@ function [LST] = LST(local_time, longitude, timezone, ordinal_day)
 %   input: ordial day (number of days since the start of the year)
 %   output: TC-factor in miutes
 %   https://www.pveducation.org/pvcdrom/properties-of-sunlight/solar-time
-%   tested
     LST = local_time + TC(longitude, timezone, ordinal_day)/60;
 end
 

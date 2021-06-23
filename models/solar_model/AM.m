@@ -1,4 +1,9 @@
 function [AM] = AM(latitude, declination, hour_angle)
+% AM: Airmass
+    %   input: latitude in degrees
+    %   input: declination in degrees
+    %   input: hour anglr in degrees
+    %   output: airmass 
     % https://en.wikipedia.org/wiki/Direct_insolation
     % https://en.wikipedia.org/wiki/Solar_zenith_angle
     % https://en.wikipedia.org/wiki/Air_mass_(solar_energy)

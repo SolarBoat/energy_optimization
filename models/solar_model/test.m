@@ -25,3 +25,5 @@ plot(ct, ct_di, 'r.', 'Markersize', 15);
 legend('radiation curve', 'current radiation')
 xlabel('time [hours]')
 ylabel('direct radiation [kW/m^2]')
+xlim([0, 24])
+ylim([0, 1])

@@ -1,13 +1,13 @@
-function [distance, u, x] = dynamicProgramming(tDiscrete, xDiscrete, uDiscrete, x0, L, E, cp, solar, Wsolar)
+function [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x0, L, E, cp, solar, Wsolar)
     Nt = length(tDiscrete);
-    Nx = length(xDiscrete);
+    Nx = xMax / dx + 1;
     Ns = length(Wsolar);
     J = zeros(Nx, Nt);
     h = 0.5;
     
     % backward sweep
     for i = 1:Nx
-        J(i,end) = E(xDiscrete(i));
+        J(i,end) = E((i - 1) * dx);
     end
     for k = (Nt - 1):-1:1
         h = tDiscrete(k + 1) - tDiscrete(k);
@@ -20,11 +20,11 @@ function [distance, u, x] = dynamicProgramming(tDiscrete, xDiscrete, uDiscrete, 
             for uk = uDiscrete
                 l = 0;
                 for j = 1:Ns
-                    xNext = xDiscrete(i) + fconst(j) - h * uk;
-                    if 0 <= xNext & xNext <= xDiscrete(end)
-                        l = l + Wsolar(j) * (h * L(uk) + J(discretize(xNext,xDiscrete), k+1));
+                    xNext = (i - 1) * dx + fconst(j) - h * uk;
+                    if 0 <= xNext & xNext <= xMax
+                        l = l + Wsolar(j) * (h * L(uk) + J(round(xNext / dx) + 1, k+1));
                     else
-                        l = inf;
+                        l = l + Wsolar(j) * 100000;
                     end
                 end
                 if l < Lmin
@@ -51,8 +51,8 @@ function [distance, u, x] = dynamicProgramming(tDiscrete, xDiscrete, uDiscrete, 
         Lmin = inf;
         for uk = uDiscrete
             xNext = x(k) + fconst - h * uk;
-            if 0 <= xNext & xNext <= xDiscrete(end)
-                l = h * L(uk) + J(discretize(xNext,xDiscrete), k);
+            if 0 <= xNext & xNext <= xMax
+                l = h * L(uk) + J(round(xNext / dx) + 1, k);
             else
                 l = inf;
             end

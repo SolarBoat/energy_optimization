@@ -1,4 +1,4 @@
-function funcArray = solarForecast(filename, power)
+function [solar_data, funcArray] = solarForecast(filename, power)
 
     %UNTITLED Summary of this function goes here
     %   Detailed explanation goes here
@@ -13,7 +13,7 @@ function funcArray = solarForecast(filename, power)
             energy = energy + 0.5*(pvEstimate(i) + pvEstimate(i+1))/2;
         end
         energy = energy - mod(t1, 0.5)*(pvEstimate(i1) + (pvEstimate(i1 + 1) - pvEstimate(i1))/0.5*mod(t1, 0.5)/2);
-        energy = energy + mod(t2, 0.5)*(pvEstimate(i1) + (pvEstimate(i1 + 1) - pvEstimate(i1))/0.5*mod(t2, 0.5)/2);
+        energy = energy + mod(t2, 0.5)*(pvEstimate(i2) + (pvEstimate(i2 + 1) - pvEstimate(i2))/0.5*mod(t2, 0.5)/2);
         energy = energy * power;
     end
 

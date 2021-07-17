@@ -1,4 +1,4 @@
-function [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x0, L, E, cp, solar, Wsolar)
+function [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x0, L, E, cp, solar, Wsolar, weight)
     Nt = length(tDiscrete);
     Nx = xMax / dx + 1;
     Ns = length(Wsolar);
@@ -24,7 +24,7 @@ function [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x
                     if 0 <= xNext & xNext <= xMax
                         l = l + Wsolar(j) * (h * L(uk) + J(round(xNext / dx) + 1, k+1));
                     else
-                        l = l + Wsolar(j) * 100000;
+                        l = l + Wsolar(j) * weight;
                     end
                 end
                 if l < Lmin

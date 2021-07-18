@@ -1,4 +1,4 @@
-function [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x0, L, E, cp, solar, Wsolar, weight)
+function [distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x0, L, E, cp, solar, Wsolar, weight)
     Nt = length(tDiscrete);
     Nx = xMax / dx + 1;
     Ns = length(Wsolar);

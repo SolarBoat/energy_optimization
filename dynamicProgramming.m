@@ -62,6 +62,11 @@ function [distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx
                 x(k+1) = xNext;
             end
         end
+        if Lmin == inf
+            disp("impossible")
+            distance = 0;
+            return
+        end
         distance = distance + h * L(u(k));
     end
     distance = -distance;

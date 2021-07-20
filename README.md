@@ -13,7 +13,7 @@ Modeling the energy budget of a solar-powered boat and planning the motor actuat
 ## Dynamic Programming approach:
 
 <p align="left">
-  <img src="images/DynProg.svg" width="700" title="dynamic programming">
+  <img src="images/approach.png" width="700" title="dynamic programming">
 </p>
 
 ## Model:

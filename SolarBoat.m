@@ -4,13 +4,13 @@ addpath('models/solarAPI')
 Psolar = 50 * 0.8; % W
 Ebattery = 200; % Wh
 Umax = 32; % W
-x0 = Ebattery / 2; % Wh
+x0 = Ebattery * 0.7; % Wh
 cp = 2; % W
 
 % motor
 cmin = 2;
 cm = 4 / ((20 - cmin) ^ (1/3));
-L = @(u) - heaviside(u - cmin) * (cm * (u - cmin) ^ (1/3));
+L = @(u) - Motor(u, cmin, cm);
 E = @(x) (x-x0)^2 * 0.005;
 
 
@@ -25,14 +25,11 @@ tDiscrete = h:h:T;
 xDiscrete = linspace(0, Ebattery, Nx);
 uDiscrete = [0, linspace(cmin, Umax, Nu - 1)];
 
-%% With forecast
 
 [solar_data, solar] = solarForecast('data1.csv', Psolar);
-[distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, Ebattery, dx, x0, L, E, cp, solar, [0.6, 0.2, 0.2], 100000);
+[distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, Ebattery, dx, x0, L, E, cp, solar, [0.6, 0.2, 0.2], 10000);
 
 
-
-%% Over 7 days
 
 figure(1)
 subplot(3, 1, 1)
@@ -44,7 +41,7 @@ xlim([0, tDiscrete(end)])
 xlabel('t in h')
 ylim([0, Psolar])
 ylabel('W')
-title("Solar Estimation")
+title("Solar Estimation s")
 
 subplot(3, 1, 2)
 plot([0, tDiscrete], x)
@@ -52,7 +49,7 @@ xlim([0, tDiscrete(end)])
 xlabel('t in h')
 ylim([0, Ebattery])
 ylabel('Wh')
-title("Battery Charge")
+title("Battery Charge x")
 
 subplot(3, 1, 3)
 plot([0, tDiscrete], [0,u'])
@@ -60,7 +57,7 @@ xlim([0, tDiscrete(end)])
 xlabel('t in h')
 ylim([0, Umax])
 ylabel('W')
-title("Motor Power")
+title("Motor Power u")
 
 figure(2)
 contourf(J, -500:10:300)
@@ -70,5 +67,6 @@ ylim([0, Ebattery/dx])
 xlim([1, tDiscrete(end)/h])
 xlabel('t in h')
 ylabel('Wh')
-title("Battery Charge")
+title("Cost Function J")
+colorbar
 distance

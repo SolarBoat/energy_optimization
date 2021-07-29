@@ -34,5 +34,5 @@ function funcArray = solarGenerator(power, day_of_year, weather)
         energy = energy * power;
     end
 
-    funcArray = {@(t1, t2) func(t1, t2, solar_data), @(t1, t2) func(t1, t2, solar_data10), @(t1, t2) func(t1, t2, solar_data90)};
+    funcArray = {@(t1, t2) func(t1, t2, solar_data10), @(t1, t2) func(t1, t2, solar_data), @(t1, t2) func(t1, t2, solar_data90)};
 end

@@ -11,16 +11,15 @@ cm = 4 / ((20 - cmin) ^ (1/3));
 L = @(u) - Motor(u, cmin, cm);
 
 T = 24 * 7;
-h = 0.5;
-dx = 0.5;
+h = 2;
+dx = 1;
 Nt = T / h;
 Nu = (Umax - cmin) + 2;
 
 tDiscrete = h:h:T;
-uDiscrete = [0, linspace(cmin, Umax, Nu - 1)];
 
 b_min = 10; %W
-b_max = 250; %W
+b_max = 350; %W
 Ebatteries = unique(round(logspace(log10(b_min), log10(b_max), 25)));
 distances = zeros(length(Ebatteries), 1);
 
@@ -36,6 +35,8 @@ ylabel('distance in km')
 title('Optimal Battery Size')
 
 solar =  solarGenerator(Psolar, 190, [1, 1, 1, 1, 1, 1, 1]);
+Nw = 35 / h;
+W = WeatherMarkov(0.2, 0.6, 0.2, Nw);
 for b = 1:length(Ebatteries)
     
     x0 = Ebatteries(b) / 2; % Wh [Full of smallest Battery]
@@ -43,11 +44,11 @@ for b = 1:length(Ebatteries)
     Nx = Ebatteries(b) / dx + 1;
     xDiscrete = linspace(0, Ebatteries(b), Nx);
   
-    [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, Ebatteries(b), dx, x0, L, E, cp, solar, [0.6, 0.2, 0.2], 100000);
-    distances(b) = distance;
+    [distance, u, x, J, Edistance] = dynamicProgramming(tDiscrete, Umax, Ebatteries(b), dx, x0, 2, L, E, cp, solar, W, 100000);
+    distances(b) = Edistance;
     disp(['iteration: ', num2str(b), ' battery: ', num2str(Ebatteries(b)), 'W  distance: ', num2str(distance), 'km'])
        
-    plot(Ebatteries(b), distance, 'xg')
+    plot(Ebatteries(b), Edistance, 'xg')
     drawnow
 end
 
@@ -59,11 +60,11 @@ for b = 1:length(Ebatteries)
     Nx = Ebatteries(b) / dx + 1;
     xDiscrete = linspace(0, Ebatteries(b), Nx);
   
-    [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, Ebatteries(b), dx, x0, L, E, cp, solar, [0.6, 0.2, 0.2], 100000);
-    distances(b) = distance;
+    [distance, u, x, J, Edistance] = dynamicProgramming(tDiscrete, Umax, Ebatteries(b), dx, x0, 2, L, E, cp, solar, W, 100000);
+    distances(b) = Edistance;
     disp(['iteration: ', num2str(b), ' battery: ', num2str(Ebatteries(b)), 'W  distance: ', num2str(distance), 'km'])
        
-    plot(Ebatteries(b), distance, 'xb')
+    plot(Ebatteries(b), Edistance, 'xb')
     drawnow
 end
 
@@ -75,11 +76,11 @@ for b = 1:length(Ebatteries)
     Nx = Ebatteries(b) / dx + 1;
     xDiscrete = linspace(0, Ebatteries(b), Nx);
   
-    [distance, u, x] = dynamicProgramming(tDiscrete, uDiscrete, Ebatteries(b), dx, x0, L, E, cp, solar, [0.6, 0.2, 0.2], 100000);
-    distances(b) = distance;
+    [distance, u, x, J, Edistance] = dynamicProgramming(tDiscrete, Umax, Ebatteries(b), dx, x0, 2, L, E, cp, solar, W, 100000);
+    distances(b) = Edistance;
     disp(['iteration: ', num2str(b), ' battery: ', num2str(Ebatteries(b)), 'W  distance: ', num2str(distance), 'km'])
        
-    plot(Ebatteries(b), distance, 'xr')
+    plot(Ebatteries(b), Edistance, 'xr')
     drawnow
 end
 hold off

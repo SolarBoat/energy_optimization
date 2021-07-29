@@ -17,5 +17,5 @@ function [solar_data, funcArray] = solarForecast(filename, power)
         energy = energy * power;
     end
 
-    funcArray = {@(t1, t2) func(t1, t2, solar_data.PvEstimate), @(t1, t2) func(t1, t2, solar_data.PvEstimate10), @(t1, t2) func(t1, t2, solar_data.PvEstimate90)};
+    funcArray = {@(t1, t2) func(t1, t2, solar_data.PvEstimate10), @(t1, t2) func(t1, t2, solar_data.PvEstimate), @(t1, t2) func(t1, t2, solar_data.PvEstimate90)};
 end

@@ -1,67 +1,103 @@
-function [distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx, x0, L, E, cp, solar, Wsolar, weight)
+function [distance, u, b, J, Edistance] = dynamicProgramming(tDiscrete, uMax, bMax, db, b0, w0, L, E, cp, solar, Wweather, weight)
     Nt = length(tDiscrete);
-    Nx = xMax / dx + 1;
-    Ns = length(Wsolar);
-    J = zeros(Nx, Nt);
-    h = 0.5;
+    Nb = bMax / db + 1;
+    Ns = size(Wweather, 1);
+    Nw = Ns;
+    J = zeros(Nb, Nw, Nt);
     
     % backward sweep
-    for i = 1:Nx
-        J(i,end) = E((i - 1) * dx);
+    for i = 1:Nb
+        for j = 1:Nw
+            J(i, j, end) = E((i - 1) * db);
+        end
     end
     for k = (Nt - 1):-1:1
         h = tDiscrete(k + 1) - tDiscrete(k);
-        fconst = zeros(Ns, 1);
-        for j = 1:Ns
-            fconst(j) = solar{j}(tDiscrete(k),tDiscrete(k+1)) - h * cp;
-        end
-        for i = 1:Nx
-            Lmin = inf;
-            for uk = uDiscrete
-                l = 0;
-                for j = 1:Ns
-                    xNext = (i - 1) * dx + fconst(j) - h * uk;
-                    if 0 <= xNext & xNext <= xMax
-                        l = l + Wsolar(j) * (h * L(uk) + J(round(xNext / dx) + 1, k+1));
-                    else
-                        l = l + Wsolar(j) * weight;
+        
+        for iw = 1:Nw
+            fconst = solar{iw}(tDiscrete(k),tDiscrete(k+1)) - h * cp;
+
+            for ib = 1:Nb
+                ibnextmax = floor(ib + fconst / db);
+                if ibnextmax < 1
+                    J(ib, iw, k) = weight;
+                    continue
+                end
+                if ibnextmax > Nb
+                    ibnextmax = Nb;
+                end
+                ibnextmin = ibnextmax - floor(uMax * h / db)  + 1;
+                if ibnextmin < 1
+                    ibnextmin = 1;
+                end
+                if ibnextmin > Nb
+                    J(ib, iw, k) = weight;
+                    continue
+                end
+                Lmin = inf;
+                for ibnext = ibnextmin:ibnextmax
+                    u_k = ((ib - ibnext) * db + fconst) / h;
+                    l = 0;
+                    for iwnext = 1:Nw
+                        l = l + Wweather(iw, iwnext) * (h * L(u_k) + J(ibnext, iwnext, k+1));
+                    end
+                    if l < Lmin
+                        Lmin = l;
                     end
                 end
-                if l < Lmin
-                    Lmin = l;
-                end
+                J(ib, iw, k) = Lmin;
             end
-            J(i, k) = Lmin;
         end
     end
     
     % forward sweep
-    x = zeros(Nt + 1, 1);
+    b = zeros(Nt + 1, 1);
     u = zeros(Nt, 1);
-    x(1) = x0;
+    b(1) = b0;
     distance = 0;
+    Edistance = 0;
     for k = 1:Nt
         if k == 1
             h = tDiscrete(1);
-            fconst = solar{1}(0,tDiscrete(k)) - h * cp;
+            fconst = solar{w0}(0,tDiscrete(k)) - h * cp;
         else
             h = tDiscrete(k) - tDiscrete(k - 1);
-            fconst = solar{1}(tDiscrete(k - 1),tDiscrete(k)) - h * cp;
+            fconst = solar{w0}(tDiscrete(k - 1),tDiscrete(k)) - h * cp;
+        end
+        
+        ib = b(k) / db + 1;
+        ibnextmax = floor(ib + fconst / db);
+        if ibnextmax < 1
+            disp("impossible")
+            distance = 0;
+            return
+        end
+        if ibnextmax > Nb
+            ibnextmax = Nb;
+        end
+        ibnextmin = ibnextmax - floor(uMax * h / db)  + 1;
+        if ibnextmin < 1
+            ibnextmin = 1;
+        end
+        if ibnextmin > Nb
+            disp("ennergy overload")
+            distance = 0;
+            return
         end
         Lmin = inf;
-        for uk = uDiscrete
-            xNext = x(k) + fconst - h * uk;
-            if 0 <= xNext & xNext <= xMax
-                l = h * L(uk) + J(round(xNext / dx) + 1, k);
-            else
-                l = inf;
+        for ibnext = ibnextmin:ibnextmax
+            u_k = ((ib - ibnext) * db + fconst) / h;
+            l = 0;
+            for iwnext = 1:Nw
+                l = l + Wweather(w0, iwnext) * (h * L(u_k) + J(ibnext, iwnext, k));
             end
             if l < Lmin
                 Lmin = l;
-                u(k) = uk;
-                x(k+1) = xNext;
+                u(k) = u_k;
+                b(k+1) = (ibnext - 1) * db;
             end
         end
+        
         if Lmin == inf
             disp("impossible")
             distance = 0;
@@ -70,4 +106,5 @@ function [distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, xMax, dx
         distance = distance + h * L(u(k));
     end
     distance = -distance;
+    Edistance = max(0,-J(round(b0/db+1), w0, 1));
 end

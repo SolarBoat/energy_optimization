@@ -2,40 +2,41 @@
 addpath('models/solarAPI')
 
 Psolar = 50 * 0.8; % W
-Ebattery = 200; % Wh
+Ebattery = 350; % Wh
 Umax = 32; % W
-x0 = Ebattery * 0.7; % Wh
+b0 = Ebattery * 0.7; % Wh
+w0 = 2;
 cp = 2; % W
 
 % motor
 cmin = 2;
 cm = 4 / ((20 - cmin) ^ (1/3));
 L = @(u) - Motor(u, cmin, cm);
-E = @(x) (x-x0)^2 * 0.005;
-
+E = @(b) (b-b0)^2 * 0.005;
 
 T = 24 * 7;
-h = 0.5;
-dx = 0.5;
+h = 1;
+db = 0.5;
 Nt = T / h;
-Nx = Ebattery / dx + 1;
+Nx = Ebattery / db + 1;
 Nu = (Umax - cmin) + 2;
 
 tDiscrete = h:h:T;
 xDiscrete = linspace(0, Ebattery, Nx);
-uDiscrete = [0, linspace(cmin, Umax, Nu - 1)];
-
 
 [solar_data, solar] = solarForecast('data1.csv', Psolar);
-[distance, u, x, J] = dynamicProgramming(tDiscrete, uDiscrete, Ebattery, dx, x0, L, E, cp, solar, [0.6, 0.2, 0.2], 10000);
+Nw = 35 / h;
+W = WeatherMarkov(0.2, 0.6, 0.2, Nw);
 
+[distance, u, b, J] = dynamicProgramming(tDiscrete, Umax, Ebattery, db, b0, w0, L, E, cp, solar, W, 10000);
 
+distance
 
 figure(1)
 subplot(3, 1, 1)
-fill([(0:(length(solar_data.PvEstimate)-1))*h,fliplr(0:(length(solar_data.PvEstimate)-1))*h], [solar_data.PvEstimate10',fliplr(solar_data.PvEstimate90')] * Psolar, 'b', 'EdgeAlpha', 0, 'FaceAlpha', 0.2)
+fill([(0:(length(solar_data.PvEstimate)-1))*0.5,fliplr(0:(length(solar_data.PvEstimate)-1))*0.5], [solar_data.PvEstimate10',fliplr(solar_data.PvEstimate90')] * Psolar, 'b', 'EdgeAlpha', 0, 'FaceAlpha', 0.2)
 hold on
-plot((0:(length(solar_data.PvEstimate)-1))*h, solar_data.PvEstimate * Psolar, 'b')
+plot((0:(length(solar_data.PvEstimate)-1))*0.5, solar_data.PvEstimate * Psolar, 'b')
 hold off
 xlim([0, tDiscrete(end)])
 xlabel('t in h')
@@ -44,7 +45,7 @@ ylabel('W')
 title("Solar Estimation s")
 
 subplot(3, 1, 2)
-plot([0, tDiscrete], x)
+plot([0, tDiscrete], b)
 xlim([0, tDiscrete(end)])
 xlabel('t in h')
 ylim([0, Ebattery])
@@ -60,13 +61,12 @@ ylabel('W')
 title("Motor Power u")
 
 figure(2)
-contourf(J, -500:10:300)
+contourf(squeeze(J(:, w0, :)), -500:10:300)
 hold on
-plot([0, tDiscrete/h], x/dx, 'r', 'LineWidth', 2.0)
-ylim([0, Ebattery/dx])
+plot([0, tDiscrete/h], b/db, 'r', 'LineWidth', 2.0)
+ylim([0, Ebattery/db])
 xlim([1, tDiscrete(end)/h])
 xlabel('t in h')
 ylabel('Wh')
 title("Cost Function J")
 colorbar
-distance

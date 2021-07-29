@@ -24,7 +24,8 @@ Nu = (Umax - cmin) + 2;
 tDiscrete = h:h:T;
 xDiscrete = linspace(0, Ebattery, Nx);
 
-[solar_data, solar] = solarForecast('data1.csv', Psolar);
+%[solar_data, solar] = solarForecast('data1.csv', Psolar);
+[solar_data, solar] = solarGenerator(Psolar, 190, [1, 0.1, 1, 1, 1, 1, 1]);
 Nw = 35 / h;
 W = WeatherMarkov(0.2, 0.6, 0.2, Nw);
 

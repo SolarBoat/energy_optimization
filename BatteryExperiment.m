@@ -34,12 +34,12 @@ xlabel('Battery capacity in Wh')
 ylabel('distance in km')
 title('Optimal Battery Size')
 
-solar =  solarGenerator(Psolar, 190, [1, 1, 1, 1, 1, 1, 1]);
+[solar_data, solar] =  solarGenerator(Psolar, 190, [1, 1, 1, 1, 1, 1, 1]);
 Nw = 35 / h;
 W = WeatherMarkov(0.2, 0.6, 0.2, Nw);
 for b = 1:length(Ebatteries)
     
-    x0 = Ebatteries(b) / 2; % Wh [Full of smallest Battery]
+    x0 = Ebatteries(b) * 0.7; % Wh [Full of smallest Battery]
     E = @(x) (x-x0)^2 * 0.005;
     Nx = Ebatteries(b) / dx + 1;
     xDiscrete = linspace(0, Ebatteries(b), Nx);
@@ -52,10 +52,10 @@ for b = 1:length(Ebatteries)
     drawnow
 end
 
-solar =  solarGenerator(Psolar, 190, [1, 1, 0.4, 0.4, 0.4, 0.4, 1]);
+[solar_data, solar] =  solarGenerator(Psolar, 190, [1, 1, 0.4, 0.4, 0.4, 0.4, 1]);
 for b = 1:length(Ebatteries)
     
-    x0 = Ebatteries(b) / 2; % Wh [Full of smallest Battery]
+    x0 = Ebatteries(b) *0.7; % Wh [Full of smallest Battery]
     E = @(x) (x-x0)^2 * 0.005;
     Nx = Ebatteries(b) / dx + 1;
     xDiscrete = linspace(0, Ebatteries(b), Nx);
@@ -68,10 +68,10 @@ for b = 1:length(Ebatteries)
     drawnow
 end
 
-solar =  solarGenerator(Psolar, 190, [1, 1, 1, 1, 1, 1, 1]* 0.4);
+[solar_data, solar] =  solarGenerator(Psolar, 190, [1, 1, 1, 1, 1, 1, 1]* 0.4);
 for b = 1:length(Ebatteries)
     
-    x0 = Ebatteries(b) / 2; % Wh [Full of smallest Battery]
+    x0 = Ebatteries(b) * 0.7; % Wh [Full of smallest Battery]
     E = @(x) (x-x0)^2 * 0.005;
     Nx = Ebatteries(b) / dx + 1;
     xDiscrete = linspace(0, Ebatteries(b), Nx);

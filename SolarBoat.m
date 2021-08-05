@@ -2,7 +2,7 @@
 addpath('models/solarAPI')
 
 Psolar = 50 * 0.8; % W
-Ebattery = 350; % Wh
+Ebattery = 200; % Wh
 Umax = 32; % W
 b0 = Ebattery * 0.7; % Wh
 w0 = 2;
@@ -24,10 +24,10 @@ Nu = (Umax - cmin) + 2;
 tDiscrete = h:h:T;
 xDiscrete = linspace(0, Ebattery, Nx);
 
-%[solar_data, solar] = solarForecast('data1.csv', Psolar);
-[solar_data, solar] = solarGenerator(Psolar, 190, [1, 0.1, 1, 1, 1, 1, 1]);
+[solar_data, solar] = solarForecast('data1.csv', Psolar);
+%[solar_data, solar] = solarGenerator(Psolar, 190, [1, 0.1, 1, 1, 1, 1, 1]);
 Nw = 35 / h;
-W = WeatherMarkov(0.2, 0.6, 0.2, Nw);
+W = eye(3); %WeatherMarkov(0.2, 0.6, 0.2, Nw);
 
 [distance, u, b, J] = dynamicProgramming(tDiscrete, Umax, Ebattery, db, b0, w0, L, E, cp, solar, W, 10000);
 

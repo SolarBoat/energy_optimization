@@ -4,6 +4,7 @@ function [distance, u, b, J, Edistance] = dynamicProgramming(tDiscrete, uMax, bM
     Ns = size(Wweather, 1);
     Nw = Ns;
     J = zeros(Nb, Nw, Nt);
+    Jd = zeros(Nb, Nw, Nt);
     
     % backward sweep
     for i = 1:Nb
@@ -35,17 +36,22 @@ function [distance, u, b, J, Edistance] = dynamicProgramming(tDiscrete, uMax, bM
                     continue
                 end
                 Lmin = inf;
+                Dmin = 0;
                 for ibnext = ibnextmin:ibnextmax
                     u_k = ((ib - ibnext) * db + fconst) / h;
                     l = 0;
+                    d = 0;
                     for iwnext = 1:Nw
                         l = l + Wweather(iw, iwnext) * (h * L(u_k) + J(ibnext, iwnext, k+1));
+                        d = d + Wweather(iw, iwnext) * (h * L(u_k) + Jd(ibnext, iwnext, k+1));
                     end
                     if l < Lmin
                         Lmin = l;
+                        Dmin = d;
                     end
                 end
                 J(ib, iw, k) = Lmin;
+                Jd(ib, iw, k) = Dmin;
             end
         end
     end
@@ -106,5 +112,5 @@ function [distance, u, b, J, Edistance] = dynamicProgramming(tDiscrete, uMax, bM
         distance = distance + h * L(u(k));
     end
     distance = -distance;
-    Edistance = max(0,-J(round(b0/db+1), w0, 1));
+    Edistance = max(0,-Jd(round(b0/db+1), w0, 1));
 end
